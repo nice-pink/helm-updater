@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/mittwald/go-helm-client v0.12.14
 	github.com/nice-pink/goutil v0.1.2
-	github.com/nice-pink/repo-services v0.0.5
+	github.com/nice-pink/repo-services v0.0.6
 	helm.sh/helm/v3 v3.16.1
 )
 

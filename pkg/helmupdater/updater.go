@@ -9,9 +9,10 @@ import (
 	"github.com/nice-pink/goutil/pkg/log"
 	"github.com/nice-pink/helm-auto-updater/pkg/models"
 	"github.com/nice-pink/repo-services/pkg/manifest"
+	"github.com/nice-pink/repo-services/pkg/util"
 )
 
-func Run(configFile string) error {
+func Run(configFile string, gitFlags util.GitFlags) error {
 	c := LoadConfig(configFile)
 
 	// the client is only used to pull repos so most options don't really matter
@@ -29,20 +30,29 @@ func Run(configFile string) error {
 
 	for _, app := range c.Apps {
 		version := GetRemoteVersion(app, helmClient)
-		if err := UpdateVersion(app, version, c.BaseFolder); err != nil {
+		replaced, err := UpdateVersion(app, version, c.BaseFolder)
+		if err != nil {
 			log.Err(err, "update version error")
+			continue
+		}
+		if replaced {
+			GitPush(app, version, c.BaseFolder, gitFlags)
 		}
 	}
 
 	return nil
 }
 
-func UpdateVersion(app models.App, version, baseFolder string) error {
+func UpdateVersion(app models.App, version, baseFolder string) (replaced bool, err error) {
 	filepath := path.Join(baseFolder, app.Path)
 	log.Info("Update app '"+app.Name+"' with version '"+version+"' file", filepath)
 	pattern := GetVersionReplacePattern(app)
-	_, err := manifest.SetTagInFileWithPattern(version, "", filepath, pattern)
-	return err
+	return manifest.SetTagInFileWithPattern(version, "", filepath, pattern)
+}
+
+func GitPush(app models.App, version, baseFolder string, gitFlags util.GitFlags) error {
+	msg := "Deploy " + app.Name + " version: " + version
+	return util.GitPush(baseFolder, msg, gitFlags)
 }
 
 func GetVersionReplacePattern(app models.App) string {

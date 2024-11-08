@@ -1,0 +1,15 @@
+{
+    "apps": [
+        {
+            "name": "name",
+            "repo": "repo",
+            "private": false,
+            "version": "*",
+            "system": "kustomize",
+            "path": "path",
+            "repoUsername": "username",
+            "repoPassword": "password"
+        }
+    ],
+    "baseFolder": "base"
+}

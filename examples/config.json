@@ -7,6 +7,8 @@
             "version": "*",
             "system": "kustomize",
             "path": "path",
+            "containerImage": "containerImage",
+            "containerVersionPrefix": "v",
             "repoUsername": "username",
             "repoPassword": "password"
         }

@@ -26,10 +26,10 @@ func GetRemoteVersion(app models.App, helmClient helmclient.Client) string {
 		return ""
 	}
 
-	return GetChartVersion(entry, helmClient)
+	return GetChartVersion(entry, helmClient, app.System)
 }
 
-func GetChartVersion(entry repo.Entry, helmClient helmclient.Client) string {
+func GetChartVersion(entry repo.Entry, helmClient helmclient.Client, system models.SystemType) string {
 	log.Info("Get chart for:", entry.Name)
 
 	chart, _, err := helmClient.GetChart(entry.Name, &action.ChartPathOptions{
@@ -43,6 +43,11 @@ func GetChartVersion(entry repo.Entry, helmClient helmclient.Client) string {
 		return ""
 	}
 	log.Info(chart.Metadata.Name, "found. App version:", chart.Metadata.AppVersion, ", Chart version:", chart.Metadata.Version)
+
+	if system == models.Deployment {
+		// in this case use app version
+		return chart.Metadata.AppVersion
+	}
 	return chart.Metadata.Version
 }
 

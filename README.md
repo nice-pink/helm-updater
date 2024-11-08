@@ -1,5 +1,7 @@
 # Config
 
+An example config file can be found in [examples/config.json](examples/config.json).
+
 ## Helm
 
 ### Private repos

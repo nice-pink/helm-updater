@@ -29,7 +29,7 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 	}
 
 	for _, app := range c.Apps {
-		version := GetRemoteVersion(app, helmClient)
+		version := app.ContainerVersionPrefix + GetRemoteVersion(app, helmClient)
 		replaced, err := UpdateVersion(app, version, c.BaseFolder)
 		if err != nil {
 			log.Err(err, "update version error")
@@ -61,6 +61,9 @@ func GetVersionReplacePattern(app models.App) string {
 	}
 	if app.System == models.ArgoCd {
 		return `([ ]+targetRevision: )([a-zA-Z0-9_.-].*)`
+	}
+	if app.System == models.Deployment {
+		return `([ ]+image: ` + app.ContainerImage + `:)([a-zA-Z0-9_.-].*)`
 	}
 	return ""
 }

@@ -21,7 +21,6 @@ func Run(configFile string) error {
 		RepositoryConfig: "bin/.helmrepo",
 		Debug:            true,
 		Linting:          false,
-		DebugLog:         func(format string, v ...interface{}) {},
 	})
 	if err != nil {
 		log.Err(err, "create helm client error")
@@ -40,7 +39,7 @@ func Run(configFile string) error {
 
 func UpdateVersion(app models.App, version, baseFolder string) error {
 	filepath := path.Join(baseFolder, app.Path)
-	log.Info("Update file", filepath, "with version", version)
+	log.Info("Update app '"+app.Name+"' with version '"+version+"' file", filepath)
 	pattern := GetVersionReplacePattern(app)
 	_, err := manifest.SetTagInFileWithPattern(version, "", filepath, pattern)
 	return err

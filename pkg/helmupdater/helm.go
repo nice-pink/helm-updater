@@ -32,7 +32,7 @@ func GetRemoteVersion(app models.App, helmClient helmclient.Client) string {
 func GetChartVersion(entry repo.Entry, helmClient helmclient.Client) string {
 	log.Info("get chart for:", entry.Name)
 
-	chart, info, err := helmClient.GetChart(entry.Name, &action.ChartPathOptions{
+	chart, _, err := helmClient.GetChart(entry.Name, &action.ChartPathOptions{
 		Password:           entry.Password,
 		PassCredentialsAll: entry.PassCredentialsAll,
 		RepoURL:            entry.URL,
@@ -42,9 +42,7 @@ func GetChartVersion(entry repo.Entry, helmClient helmclient.Client) string {
 		log.Err(err, "get release error")
 		return ""
 	}
-	log.Info("info:", info)
-
-	log.Info("app version:", chart.Metadata.AppVersion, "chart version:", chart.Metadata.Version)
+	log.Info(chart.Metadata.Name, "found. App version:", chart.Metadata.AppVersion, ", Chart version:", chart.Metadata.Version)
 	return chart.Metadata.Version
 }
 

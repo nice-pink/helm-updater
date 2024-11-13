@@ -46,6 +46,8 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 			} else {
 				notify.SendNotification(c.Notify, app, version)
 			}
+		} else {
+			log.Info("Already up to date.")
 		}
 	}
 

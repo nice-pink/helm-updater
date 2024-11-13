@@ -21,8 +21,3 @@ type App struct {
 	RepoUsername           string
 	RepoPassword           string
 }
-
-type Config struct {
-	Apps       []App
-	BaseFolder string
-}

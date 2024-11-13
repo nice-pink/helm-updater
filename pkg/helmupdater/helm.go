@@ -6,7 +6,7 @@ import (
 
 	helmclient "github.com/mittwald/go-helm-client"
 	"github.com/nice-pink/goutil/pkg/log"
-	"github.com/nice-pink/helm-auto-updater/pkg/models"
+	"github.com/nice-pink/helm-updater/pkg/models"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/repo"
 )

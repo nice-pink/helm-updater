@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/nice-pink/goutil/pkg/log"
-	"github.com/nice-pink/helm-auto-updater/pkg/helmupdater"
+	"github.com/nice-pink/helm-updater/pkg/helmupdater"
 	"github.com/nice-pink/repo-services/pkg/util"
 )
 

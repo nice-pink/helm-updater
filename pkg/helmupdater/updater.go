@@ -7,7 +7,8 @@ import (
 
 	helmclient "github.com/mittwald/go-helm-client"
 	"github.com/nice-pink/goutil/pkg/log"
-	"github.com/nice-pink/helm-auto-updater/pkg/models"
+	"github.com/nice-pink/helm-updater/pkg/models"
+	"github.com/nice-pink/helm-updater/pkg/notify"
 	"github.com/nice-pink/repo-services/pkg/manifest"
 	"github.com/nice-pink/repo-services/pkg/util"
 )
@@ -30,13 +31,21 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 
 	for _, app := range c.Apps {
 		version := app.ContainerVersionPrefix + GetRemoteVersion(app, helmClient)
+		if version == "" {
+			log.Warn("No valid version '"+version+"' for", app.Name)
+		}
 		replaced, err := UpdateVersion(app, version, c.BaseFolder)
 		if err != nil {
 			log.Err(err, "update version error")
 			continue
 		}
 		if replaced {
-			GitPush(app, version, c.BaseFolder, gitFlags)
+			err = GitPush(app, version, c.BaseFolder, gitFlags)
+			if err != nil {
+				log.Err(err, "git push error")
+			} else {
+				notify.SendNotification(c.Notify, app, version)
+			}
 		}
 	}
 

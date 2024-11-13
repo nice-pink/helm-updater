@@ -13,5 +13,9 @@
             "repoPassword": "password"
         }
     ],
-    "baseFolder": "base"
+    "baseFolder": "base",
+    "notify": {
+        "enable": true,
+        "webhook": "webhook"
+    }
 }

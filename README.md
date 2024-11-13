@@ -2,6 +2,10 @@
 
 An example config file can be found in [examples/config.json](examples/config.json).
 
+# Env vars
+
+The notify webhook can be set as env var *HELM_UPDATER_NOTIFY_WEBHOOK*. The env var will be preferred.
+
 ## Helm
 
 ### Private repos

@@ -31,4 +31,4 @@ WORKDIR /app
 
 # copy executable
 COPY --from=builder /app/bin/* /app/
-# ENTRYPOINT [ "/app/APP_NAME" ]
+ENTRYPOINT [ "/app/helm-updater" ]

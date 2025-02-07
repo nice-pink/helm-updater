@@ -16,6 +16,14 @@ import (
 func Run(configFile string, gitFlags util.GitFlags) error {
 	c := LoadConfig(configFile)
 
+	// checkout repo?
+	if gitFlags.Url != nil {
+		err := util.GitClone(*gitFlags.Url, c.BaseFolder, gitFlags)
+		if err != nil {
+			return err
+		}
+	}
+
 	// the client is only used to pull repos so most options don't really matter
 	helmClient, err := helmclient.New(&helmclient.Options{
 		Namespace:        "default",

@@ -14,11 +14,17 @@ var (
 )
 
 func main() {
+	testFail := flag.Bool("testFail", false, "Test failing.")
 	gitFlags := util.GetGitFlags()
 	flag.Parse()
 
 	log.Info("*** Start")
 	log.Info(os.Args)
+
+	if *testFail {
+		log.Error("TEST FAILING!!!")
+		os.Exit(2)
+	}
 
 	err := helmupdater.Run(*config, gitFlags)
 	if err != nil {

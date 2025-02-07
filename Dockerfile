@@ -16,12 +16,13 @@ COPY . .
 # build all
 RUN ./build
 
-# # git 
-# FROM cgr.dev/chainguard/git:latest-root-dev AS runner
-# # add glibc compatibility
-# RUN apk add --update gcompat jq
+# plain
+# FROM cgr.dev/chainguard/glibc-dynamic:latest AS runner
 
-FROM cgr.dev/chainguard/glibc-dynamic:latest AS runner
+# git 
+FROM cgr.dev/chainguard/git:latest-root-dev AS runner
+# add glibc compatibility
+RUN apk add --update gcompat jq
 
 # Info
 LABEL org.opencontainers.image.authors="r@nice.pink"

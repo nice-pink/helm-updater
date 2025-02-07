@@ -54,7 +54,7 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 			err = GitPush(app, version, c.BaseFolder, gitFlags)
 			if err != nil {
 				log.Err(err, "git push error")
-				return err
+				failedUpdate = append(failedUpdate, app.Name)
 			} else {
 				notify.SendNotification(c.Notify, app, version)
 			}

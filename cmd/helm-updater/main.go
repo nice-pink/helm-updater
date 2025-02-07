@@ -20,5 +20,8 @@ func main() {
 	log.Info("*** Start")
 	log.Info(os.Args)
 
-	helmupdater.Run(*config, gitFlags)
+	err := helmupdater.Run(*config, gitFlags)
+	if err != nil {
+		os.Exit(2)
+	}
 }

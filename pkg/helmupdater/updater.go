@@ -37,6 +37,8 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 		return err
 	}
 
+	failedUpdate := []string{}
+
 	for _, app := range c.Apps {
 		version := app.ContainerVersionPrefix + GetRemoteVersion(app, helmClient)
 		if version == "" {
@@ -45,17 +47,26 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 		replaced, err := UpdateVersion(app, version, c.BaseFolder)
 		if err != nil {
 			log.Err(err, "update version error")
+			failedUpdate = append(failedUpdate, app.Name)
 			continue
 		}
 		if replaced {
 			err = GitPush(app, version, c.BaseFolder, gitFlags)
 			if err != nil {
 				log.Err(err, "git push error")
+				return err
 			} else {
 				notify.SendNotification(c.Notify, app, version)
 			}
 		} else {
 			log.Info("Already up to date.")
+		}
+	}
+
+	if len(failedUpdate) > 0 {
+		log.Error("Failed updates:")
+		for _, item := range failedUpdate {
+			log.Info("-", item)
 		}
 	}
 

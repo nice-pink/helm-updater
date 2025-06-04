@@ -1,0 +1,35 @@
+{
+    "apps": [
+        {
+            "autoUpdate": true,
+            "name": "dex",
+            "repo": "https://charts.dexidp.io",
+            "private": false,
+            "version": "*",
+            "system": "kustomize",
+            "path": "base/resources/ops/dex/dev/kustomization.yaml",
+            "containerImage": "ignored",
+            "containerVersionPrefix": "",
+            "repoUsername": "",
+            "repoPassword": ""
+        },
+        {
+            "autoUpdate": true,
+            "name": "oauth2-proxy",
+            "repo": "https://oauth2-proxy.github.io/manifests",
+            "private": false,
+            "version": "*",
+            "system": "deployment",
+            "path": "base/patches/oauth2-proxy/dev/deployment.yaml",
+            "containerImage": "quay.io/oauth2-proxy/oauth2-proxy",
+            "containerVersionPrefix": "v",
+            "repoUsername": "",
+            "repoPassword": ""
+        }
+    ],
+    "baseFolder": "/Users/raf/dev/ops/rs-deployments",
+    "notify": {
+        "enable": true,
+        "webhook": "https://hooks.slack.com/services/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"
+    }
+}

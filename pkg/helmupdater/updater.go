@@ -1,15 +1,11 @@
 package helmupdater
 
 import (
-	"encoding/json"
-	"os"
-	"path"
-
 	helmclient "github.com/mittwald/go-helm-client"
+	"github.com/nice-pink/goutil/pkg/data"
 	"github.com/nice-pink/goutil/pkg/log"
 	"github.com/nice-pink/helm-updater/pkg/models"
 	"github.com/nice-pink/helm-updater/pkg/notify"
-	"github.com/nice-pink/repo-services/pkg/manifest"
 	"github.com/nice-pink/repo-services/pkg/util"
 )
 
@@ -44,7 +40,7 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 		if version == "" {
 			log.Warn("No valid version '"+version+"' for", app.Name)
 		}
-		replaced, err := UpdateVersion(app, version, c.BaseFolder)
+		replaced, newAvailable, err := UpdateVersion(app, version, c.BaseFolder)
 		if err != nil {
 			log.Err(err, "update version error")
 			failedUpdate = append(failedUpdate, app.Name)
@@ -56,8 +52,10 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 				log.Err(err, "git push error")
 				failedUpdate = append(failedUpdate, app.Name)
 			} else {
-				notify.SendNotification(c.Notify, app, version)
+				notify.SendNotification(c.Notify, app, version, true)
 			}
+		} else if newAvailable {
+			notify.SendNotification(c.Notify, app, version, false)
 		} else {
 			log.Info("Already up to date.")
 		}
@@ -73,11 +71,26 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 	return nil
 }
 
-func UpdateVersion(app models.App, version, baseFolder string) (replaced bool, err error) {
-	filepath := path.Join(baseFolder, app.Path)
-	log.Info("Update app '"+app.Name+"' with version '"+version+"' file", filepath)
-	pattern := GetVersionReplacePattern(app)
-	return manifest.SetTagInFileWithPattern(version, "", filepath, pattern)
+func UpdateVersion(app models.App, version, baseFolder string) (replaced, newAvailable bool, err error) {
+	// get manifest data and path
+	manifest, path, err := getManifest(app, baseFolder)
+	if err != nil {
+		log.Err(err, "open manifest")
+		return false, false, err
+	}
+
+	// new version available
+	current := getCurrentVersion(app, manifest)
+	newAvailable = current != version
+
+	// if should not auto update return
+	if !app.AutoUpdate {
+		return false, newAvailable, nil
+	}
+
+	// update manifest
+	_, replaced, err = Update(app, version, path, manifest)
+	return replaced, newAvailable, err
 }
 
 func GitPush(app models.App, version, baseFolder string, gitFlags util.GitFlags) error {
@@ -85,32 +98,15 @@ func GitPush(app models.App, version, baseFolder string, gitFlags util.GitFlags)
 	return util.GitPush(baseFolder, msg, gitFlags)
 }
 
-func GetVersionReplacePattern(app models.App) string {
-	if app.System == models.Kustomize {
-		return `([ ]+version: )([a-zA-Z0-9_.-].*)`
-	}
-	if app.System == models.ArgoCd {
-		return `([ ]+targetRevision: )([a-zA-Z0-9_.-].*)`
-	}
-	if app.System == models.Deployment {
-		return `([ ]+image: ` + app.ContainerImage + `:)([a-zA-Z0-9_.-].*)`
-	}
-	return ""
-}
-
 // config
 
 func LoadConfig(filepath string) *models.Config {
-	data, err := os.ReadFile(filepath)
-	if err != nil {
-		log.Err(err, "load config error.")
-		return nil
-	}
+	log.Info("Load config from", filepath)
 
 	var config models.Config
-	err = json.Unmarshal(data, &config)
+	err := data.ReadJsonOrYaml(filepath, &config)
 	if err != nil {
-		log.Err(err, "load config error.")
+		log.Err(err, "load config error.", filepath)
 		return nil
 	}
 	return &config

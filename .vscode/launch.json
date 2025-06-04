@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "test",
+            "type": "go",
+            "request": "launch",
+            "mode": "test",
+            "program": "test ./...",
+            "envFile": "${workspaceFolder}/.env",
+            "showLog": true
+        }
+    ]
+}

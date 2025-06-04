@@ -24,4 +24,4 @@ apps:
 baseFolder: /Users/raf/dev/ops/rs-deployments
 notify:
   enable: true
-  webhook: https://hooks.slack.com/services/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 
+  webhook: from_env_var

@@ -9,8 +9,19 @@ import (
 	"github.com/nice-pink/repo-services/pkg/util"
 )
 
-func Run(configFile string, gitFlags util.GitFlags) error {
+type Updater struct {
+	notifyClient notify.Client
+}
+
+func NewUpdater() *Updater {
+	return &Updater{}
+}
+
+func (u *Updater) Run(configFile string, gitFlags util.GitFlags) error {
 	c := LoadConfig(configFile)
+
+	// init notify client
+	u.notifyClient = notify.NewClient(c.Notify)
 
 	// checkout repo?
 	if gitFlags.Url != nil {
@@ -40,7 +51,7 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 		if version == "" {
 			log.Warn("No valid version '"+version+"' for", app.Name)
 		}
-		replaced, newAvailable, err := UpdateVersion(app, version, c.BaseFolder)
+		replaced, newAvailable, err := updateVersion(app, version, c.BaseFolder)
 		if err != nil {
 			log.Err(err, "update version error")
 			failedUpdate = append(failedUpdate, app.Name)
@@ -52,10 +63,10 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 				log.Err(err, "git push error")
 				failedUpdate = append(failedUpdate, app.Name)
 			} else {
-				notify.SendNotification(c.Notify, app, version, true)
+				u.notifyClient.SendNotification(c.Notify, app, version, true)
 			}
 		} else if newAvailable {
-			notify.SendNotification(c.Notify, app, version, false)
+			u.notifyClient.SendNotification(c.Notify, app, version, false)
 		} else {
 			log.Info("Already up to date.")
 		}
@@ -71,7 +82,7 @@ func Run(configFile string, gitFlags util.GitFlags) error {
 	return nil
 }
 
-func UpdateVersion(app models.App, version, baseFolder string) (replaced, newAvailable bool, err error) {
+func updateVersion(app models.App, version, baseFolder string) (replaced, newAvailable bool, err error) {
 	// get manifest data and path
 	manifest, path, err := getManifest(app, baseFolder)
 	if err != nil {

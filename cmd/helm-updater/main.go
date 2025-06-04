@@ -26,7 +26,8 @@ func main() {
 		os.Exit(2)
 	}
 
-	err := helmupdater.Run(*config, gitFlags)
+	updater := helmupdater.NewUpdater()
+	err := updater.Run(*config, gitFlags)
 	if err != nil {
 		os.Exit(2)
 	}

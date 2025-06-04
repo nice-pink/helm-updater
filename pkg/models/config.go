@@ -7,6 +7,7 @@ type Config struct {
 }
 
 type Notication struct {
-	Enable  bool
-	Webhook string
+	Enable    bool
+	ChannelId string
+	Webhook   string
 }

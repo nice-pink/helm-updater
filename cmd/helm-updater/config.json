@@ -30,6 +30,7 @@
     "baseFolder": "/Users/raf/dev/ops/rs-deployments",
     "notify": {
         "enable": true,
-        "webhook": "from_env_var"
+        "webhook": "from_env_var",
+        "channelId": "from_env_var"
     }
 }

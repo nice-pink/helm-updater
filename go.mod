@@ -8,6 +8,7 @@ require (
 	github.com/mittwald/go-helm-client v0.12.17
 	github.com/nice-pink/goutil v0.4.2
 	github.com/nice-pink/repo-services v0.0.8
+	github.com/nice-pink/slack-app v0.0.0-20250604095121-7cb2ccc2dfd5
 	helm.sh/helm/v3 v3.17.1
 )
 
@@ -117,6 +118,7 @@ require (
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/skeema/knownhosts v1.2.2 // indirect
+	github.com/slack-go/slack v0.16.0 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
 	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect

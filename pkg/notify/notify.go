@@ -8,21 +8,31 @@ import (
 	"github.com/nice-pink/helm-updater/pkg/models"
 )
 
-func ShouldNotify(config models.Notication) bool {
-	return config.Enable && config.Webhook != ""
+type Notifier struct {
+	webhook string
 }
 
-func SendNotification(config models.Notication, app models.App, version string, updated bool) error {
-	if !ShouldNotify(config) {
+func NewNotifierClient() *Notifier {
+	return &Notifier{
+		webhook: os.Getenv("HELM_UPDATER_NOTIFY_WEBHOOK"),
+	}
+}
+
+func (c *Notifier) ShouldNotify(config models.Notication) bool {
+	return config.Enable && (config.Webhook != "" || c.webhook != "")
+}
+
+func (c *Notifier) SendNotification(config models.Notication, app models.App, version string, updated bool) error {
+	if !c.ShouldNotify(config) {
 		return nil
 	}
 
-	msg := getMessage(config, app, version, updated)
+	msg := c.getMessage(config, app, version, updated)
 	log.Info("Send notification:", msg.Text)
 	return notify.Send(msg)
 }
 
-func getMessage(config models.Notication, app models.App, version string, updated bool) notify.SlackMessage {
+func (c *Notifier) getMessage(config models.Notication, app models.App, version string, updated bool) notify.SlackMessage {
 	// prefer env var for notification webhook
 	url := os.Getenv("HELM_UPDATER_NOTIFY_WEBHOOK")
 	if url == "" {

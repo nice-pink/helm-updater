@@ -37,7 +37,7 @@ func TestUpdateVersionKustomize(t *testing.T) {
 	version := "100.0.0"
 
 	// don't update manifest
-	replaced, newAvailable, err := UpdateVersion(app, version, TEST_FILE_BASE_PATH)
+	replaced, newAvailable, err := updateVersion(app, version, TEST_FILE_BASE_PATH)
 	if err != nil {
 		t.Error("update version error", err)
 	}
@@ -50,7 +50,7 @@ func TestUpdateVersionKustomize(t *testing.T) {
 
 	// write manifest (autoupdate)
 	app.AutoUpdate = true
-	replaced, newAvailable, err = UpdateVersion(app, version, TEST_FILE_BASE_PATH)
+	replaced, newAvailable, err = updateVersion(app, version, TEST_FILE_BASE_PATH)
 	if err != nil {
 		t.Error("update version error", err)
 	}

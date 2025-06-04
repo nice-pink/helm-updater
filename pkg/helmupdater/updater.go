@@ -47,7 +47,8 @@ func (u *Updater) Run(configFile string, gitFlags util.GitFlags) error {
 	failedUpdate := []string{}
 
 	for _, app := range c.Apps {
-		version := app.ContainerVersionPrefix + GetRemoteVersion(app, helmClient)
+		//version := app.ContainerVersionPrefix + GetRemoteVersion(app, helmClient) // container version prefix is added in other part
+		version := GetRemoteVersion(app, helmClient)
 		if version == "" {
 			log.Warn("No valid version '"+version+"' for", app.Name)
 		}

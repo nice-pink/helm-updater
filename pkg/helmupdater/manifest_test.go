@@ -4,7 +4,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nice-pink/goutil/pkg/log"
 	"github.com/nice-pink/helm-updater/pkg/models"
 	"github.com/nice-pink/helm-updater/testdata"
 )
@@ -86,7 +85,7 @@ func TestUpdateTerraform(t *testing.T) {
 
 	sData := string(data)
 	if !strings.Contains(sData, TEST_VERSION_NEW) {
-		log.Error("does not contain new version")
+		t.Error("does not contain new version")
 	}
 }
 
@@ -105,7 +104,7 @@ func TestUpdateKustomize(t *testing.T) {
 
 	sData := string(data)
 	if !strings.Contains(sData, TEST_VERSION_NEW) {
-		log.Error("does not contain new version")
+		t.Error("does not contain new version")
 	}
 }
 
@@ -124,7 +123,7 @@ func TestUpdateDeployment(t *testing.T) {
 
 	sData := string(data)
 	if !strings.Contains(sData, TEST_VERSION_NEW) {
-		log.Error("does not contain new version")
+		t.Error("does not contain new version")
 	}
 }
 
@@ -143,7 +142,7 @@ func TestUpdateArgo(t *testing.T) {
 
 	sData := string(data)
 	if !strings.Contains(sData, TEST_VERSION_NEW) {
-		log.Error("does not contain new version")
+		t.Error("does not contain new version")
 	}
 }
 

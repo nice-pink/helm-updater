@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+spec:
+  template:
+    spec:
+      # Add OAuth2 proxy sidecar container configuration
+      containers:
+      - name: nginx-ingress-controller
+        image: quay.io/oauth2-proxy/oauth2-proxy:v100.0.0

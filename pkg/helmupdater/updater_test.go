@@ -4,7 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/nice-pink/goutil/pkg/log"
 	"github.com/nice-pink/helm-updater/testdata"
 )
 
@@ -113,14 +112,13 @@ func TestUpdateVersionDeployment(t *testing.T) {
 	}
 
 	sData := string(data)
-	log.Info(sData)
 	v := getCurrentVersion(app, sData)
-	if v == version {
+	if v != version {
 		t.Error("versions in manifest don't match")
 	}
 
-	// err = os.Remove(outputPath)
-	// if err != nil {
-	// 	t.Error("cannot delete manifest file", outputPath)
-	// }
+	err = os.Remove(outputPath)
+	if err != nil {
+		t.Error("cannot delete manifest file", outputPath)
+	}
 }

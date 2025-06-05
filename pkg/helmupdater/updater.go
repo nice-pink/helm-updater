@@ -79,7 +79,7 @@ func (u *Updater) Run() error {
 }
 
 func (u *Updater) updateVersion(app models.App, version, baseFolder string) error {
-	for _, path := range app.Paths {
+	for i, path := range app.Paths {
 		replaced, newAvailable, err := updateVersionInPath(app, path, version, baseFolder)
 		if err != nil {
 			log.Err(err, "update version error")
@@ -90,10 +90,10 @@ func (u *Updater) updateVersion(app models.App, version, baseFolder string) erro
 			if err != nil {
 				return err
 			} else {
-				u.sendNotification(app, version, true)
+				u.sendNotification(app, i, version, true)
 			}
 		} else if newAvailable {
-			u.sendNotification(app, version, false)
+			u.sendNotification(app, i, version, false)
 		} else {
 			log.Info("Already up to date.")
 		}
@@ -101,12 +101,12 @@ func (u *Updater) updateVersion(app models.App, version, baseFolder string) erro
 	return nil
 }
 
-func (u *Updater) sendNotification(app models.App, version string, updated bool) {
-	log.Info("send")
-	// if u.config == nil {
-	// 	return
-	// }
-	// u.notifyClient.SendNotification(u.config.Notify, app, version, false)
+func (u *Updater) sendNotification(app models.App, index int, version string, updated bool) {
+	// log.Info("send")
+	if u.config == nil {
+		return
+	}
+	u.notifyClient.SendNotification(u.config.Notify, app, index, version, false)
 }
 
 //
@@ -123,9 +123,12 @@ func updateVersionInPath(app models.App, appPath, version, baseFolder string) (r
 	// new version available
 	current := getCurrentVersion(app, manifest)
 	newAvailable = current != version
+	if newAvailable {
+		log.Info("New version available. Current:", current, "New:", version)
+	}
 
 	// if should not auto update return
-	if !app.AutoUpdate {
+	if !newAvailable || !app.AutoUpdate {
 		return false, newAvailable, nil
 	}
 

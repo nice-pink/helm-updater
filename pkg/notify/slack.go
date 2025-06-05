@@ -24,17 +24,17 @@ func (c *SlackClient) ShouldNotify(config models.Notication) bool {
 	return config.Enable && (config.ChannelId != "" || c.channelId != "")
 }
 
-func (c *SlackClient) SendNotification(config models.Notication, app models.App, version string, updated bool) error {
+func (c *SlackClient) SendNotification(config models.Notication, app models.App, index int, version string, updated bool) error {
 	if !c.ShouldNotify(config) {
 		return nil
 	}
 
-	msg := c.getMessage(config, app, version, updated)
+	msg := c.getMessage(config, app, index, version, updated)
 	log.Info("Send notification:", msg.Text)
 	return c.client.SendMsg(msg)
 }
 
-func (c *SlackClient) getMessage(config models.Notication, app models.App, version string, updated bool) send.Msg {
+func (c *SlackClient) getMessage(config models.Notication, app models.App, index int, version string, updated bool) send.Msg {
 	// prefer env var for notification webhook
 	channelId := os.Getenv("HELM_UPDATER_SLACK_CHANNEL_ID")
 	if channelId == "" {
@@ -45,7 +45,7 @@ func (c *SlackClient) getMessage(config models.Notication, app models.App, versi
 		// updated version
 		return send.Msg{
 			Header:    "🚀 Updated " + app.Name + " to version " + version,
-			Text:      "Updated using helm-updater.",
+			Text:      "Updated using helm-updater. Path: " + app.Paths[index],
 			Color:     "#34eb8c",
 			ChannelId: channelId,
 		}
@@ -54,7 +54,7 @@ func (c *SlackClient) getMessage(config models.Notication, app models.App, versi
 	// new version available but not updated
 	return send.Msg{
 		Header:    "New version avaiable for " + app.Name,
-		Text:      "Version available " + version,
+		Text:      "Version available " + version + ", Path: " + app.Paths[index],
 		Color:     "#349ceb",
 		ChannelId: channelId,
 	}

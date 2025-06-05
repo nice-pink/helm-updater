@@ -22,17 +22,17 @@ func (c *Notifier) ShouldNotify(config models.Notication) bool {
 	return config.Enable && (config.Webhook != "" || c.webhook != "")
 }
 
-func (c *Notifier) SendNotification(config models.Notication, app models.App, version string, updated bool) error {
+func (c *Notifier) SendNotification(config models.Notication, app models.App, index int, version string, updated bool) error {
 	if !c.ShouldNotify(config) {
 		return nil
 	}
 
-	msg := c.getMessage(config, app, version, updated)
+	msg := c.getMessage(config, app, index, version, updated)
 	log.Info("Send notification:", msg.Text)
 	return notify.Send(msg)
 }
 
-func (c *Notifier) getMessage(config models.Notication, app models.App, version string, updated bool) notify.SlackMessage {
+func (c *Notifier) getMessage(config models.Notication, app models.App, index int, version string, updated bool) notify.SlackMessage {
 	// prefer env var for notification webhook
 	url := os.Getenv("HELM_UPDATER_NOTIFY_WEBHOOK")
 	if url == "" {
@@ -43,7 +43,7 @@ func (c *Notifier) getMessage(config models.Notication, app models.App, version 
 		// updated version
 		return notify.SlackMessage{
 			Text:  "🚀 Updated " + app.Name + " to version " + version,
-			Info:  "Updated using helm-updater.",
+			Info:  "Updated using helm-updater. Path: " + app.Paths[index],
 			Color: "#34eb8c",
 			Url:   url,
 		}
@@ -52,7 +52,7 @@ func (c *Notifier) getMessage(config models.Notication, app models.App, version 
 	// new version available but not updated
 	return notify.SlackMessage{
 		Text:  "New version avaiable for " + app.Name,
-		Info:  "Version available " + version,
+		Info:  "Version available " + version + ", Path: " + app.Paths[index],
 		Color: "#349ceb",
 		Url:   url,
 	}

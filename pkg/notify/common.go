@@ -8,7 +8,7 @@ import (
 
 type Client interface {
 	ShouldNotify(config models.Notication) bool
-	SendNotification(config models.Notication, app models.App, version string, updated bool) error
+	SendNotification(config models.Notication, app models.App, index int, version string, updated bool) error
 }
 
 func NewClient(config models.Notication) Client {
@@ -29,6 +29,6 @@ func (c *Dummy) ShouldNotify(config models.Notication) bool {
 	return false
 }
 
-func (c *Dummy) SendNotification(config models.Notication, app models.App, version string, updated bool) error {
+func (c *Dummy) SendNotification(config models.Notication, app models.App, index int, version string, updated bool) error {
 	return nil
 }

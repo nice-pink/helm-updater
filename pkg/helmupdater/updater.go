@@ -102,10 +102,11 @@ func (u *Updater) updateVersion(app models.App, version, baseFolder string) erro
 }
 
 func (u *Updater) sendNotification(app models.App, version string, updated bool) {
-	if u.config == nil {
-		return
-	}
-	u.notifyClient.SendNotification(u.config.Notify, app, version, false)
+	log.Info("send")
+	// if u.config == nil {
+	// 	return
+	// }
+	// u.notifyClient.SendNotification(u.config.Notify, app, version, false)
 }
 
 //

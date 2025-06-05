@@ -1,4 +1,4 @@
-![Logo of helm-updater showing a nautic stearing wheel and and arrow towards the outlines of the kubernetes logo.](https://www.nice.pink/img/helm-updater.png)
+![Logo of helm-updater showing a nautic stearing wheel and and arrow towards the outlines of the kubernetes logo.](https://www.nice.pink/img/helm-updater-s.png)
 
 # What
 

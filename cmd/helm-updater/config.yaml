@@ -1,3 +1,17 @@
+baseFolder: /src
+
+
+helm:
+  cachePath: bin/.helmcache
+  repoFilePath: bin/.helmrepo
+  cleanUp: true
+
+notify:
+  enable: true
+  webhook: from_env_var
+  # token: from_env_var
+  # channelId: ABCDEFGHIJ
+
 apps:
 - autoUpdate: true
   name: dex
@@ -23,10 +37,3 @@ apps:
   containerVersionPrefix: v
   repoUsername: ""
   repoPassword: ""
-
-baseFolder: /src
-notify:
-  enable: true
-  webhook: from_env_var
-  # token: from_env_var
-  # channelId: ABCDEFGHIJ

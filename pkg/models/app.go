@@ -7,7 +7,6 @@ const (
 	ArgoCd    SystemType = "argocd"    // update argocd application manifest
 	K8s       SystemType = "k8s"       // update container image in deployment, statefulsets, daemonsets
 	Terraform SystemType = "terraform" // terraform module
-	Helm      SystemType = "helm"      // direct helm release - Still not implemented!!!
 )
 
 type App struct {

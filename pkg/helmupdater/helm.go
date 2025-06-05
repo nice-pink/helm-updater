@@ -4,7 +4,6 @@ import (
 	"os"
 	"strings"
 
-	helmclient "github.com/mittwald/go-helm-client"
 	"github.com/nice-pink/goutil/pkg/log"
 	"github.com/nice-pink/helm-updater/pkg/models"
 	"helm.sh/helm/v3/pkg/action"
@@ -18,28 +17,28 @@ const (
 	ENV_USERNAME_SUFFIX string = "_USERNAME"
 )
 
-func GetRemoteVersion(app models.App, helmClient helmclient.Client) string {
+func (u *Updater) getRemoteVersion(app models.App) string {
 	entry := GetRepoEntry(app)
-	err := helmClient.AddOrUpdateChartRepo(entry)
+	err := u.helmClient.AddOrUpdateChartRepo(entry)
 	if err != nil {
 		log.Err(err, "add or update chart repo error")
 		return ""
 	}
 
-	return GetChartVersion(entry, helmClient, app.System)
+	return u.getChartVersion(entry, app.System)
 }
 
-func GetChartVersion(entry repo.Entry, helmClient helmclient.Client, system models.SystemType) string {
+func (u *Updater) getChartVersion(entry repo.Entry, system models.SystemType) string {
 	log.Info("Get chart for:", entry.Name)
 
-	chart, _, err := helmClient.GetChart(entry.Name, &action.ChartPathOptions{
+	chart, _, err := u.helmClient.GetChart(entry.Name, &action.ChartPathOptions{
 		Password:           entry.Password,
 		PassCredentialsAll: entry.PassCredentialsAll,
 		RepoURL:            entry.URL,
 		Username:           entry.Username,
 	})
 	if err != nil {
-		log.Err(err, "get release error")
+		log.Err(err, "get chart version error", entry.Name)
 		return ""
 	}
 	log.Info(chart.Metadata.Name, "found. App version:", chart.Metadata.AppVersion, ", Chart version:", chart.Metadata.Version)
@@ -51,12 +50,12 @@ func GetChartVersion(entry repo.Entry, helmClient helmclient.Client, system mode
 	return chart.Metadata.Version
 }
 
-func GetReleaseVersion(releaseName string, helmClient helmclient.Client) string {
+func (u *Updater) getReleaseVersion(releaseName string) string {
 	log.Info("get release for:", releaseName)
 
-	release, err := helmClient.GetRelease(releaseName)
+	release, err := u.helmClient.GetRelease(releaseName)
 	if err != nil {
-		log.Err(err, "get release error")
+		log.Err(err, "get release error", releaseName)
 		return ""
 	}
 
@@ -111,4 +110,21 @@ func GetRepoCredentialsEnv(app models.App, suffix string) string {
 		return envVal
 	}
 	return os.Getenv(ENV_DEFAULT + suffix)
+}
+
+// clean up
+
+func ClearHelmCache(cachePath, repoFilePath string) error {
+	return nil
+
+	// this will lead to missing index files error!
+	// err := os.RemoveAll(cachePath + "/")
+	// if err != nil {
+	// 	log.Err(err, "cannot clear cache")
+	// }
+	// err = os.Remove(repoFilePath)
+	// if err != nil {
+	// 	log.Err(err, "cannot delete repo file")
+	// }
+	// return err
 }

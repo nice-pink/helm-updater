@@ -13,6 +13,7 @@ type Updater struct {
 	notifyClient notify.Client
 	gitFlags     util.GitFlags
 	config       *models.Config
+	helmClient   helmclient.Client
 }
 
 func NewUpdater(configFile string, gitFlags util.GitFlags) *Updater {
@@ -24,15 +25,28 @@ func NewUpdater(configFile string, gitFlags util.GitFlags) *Updater {
 	// init notify client
 	notifyClient := notify.NewClient(c.Notify)
 
+	// the client is only used to pull repos so most options don't really matter
+	helmClient, err := helmclient.New(&helmclient.Options{
+		Namespace:        "default",
+		RepositoryCache:  c.Helm.CachePath,
+		RepositoryConfig: c.Helm.RepoFilePath,
+		Debug:            false,
+		Linting:          false,
+	})
+	if err != nil {
+		log.Err(err, "create helm client error")
+		return nil
+	}
+
 	return &Updater{
 		config:       c,
 		notifyClient: notifyClient,
 		gitFlags:     gitFlags,
+		helmClient:   helmClient,
 	}
 }
 
 func (u *Updater) Run() error {
-
 	// checkout repo?
 	if u.gitFlags.Url != nil {
 		err := util.GitClone(*u.gitFlags.Url, u.config.BaseFolder, u.gitFlags)
@@ -41,30 +55,22 @@ func (u *Updater) Run() error {
 		}
 	}
 
-	// the client is only used to pull repos so most options don't really matter
-	helmClient, err := helmclient.New(&helmclient.Options{
-		Namespace:        "default",
-		RepositoryCache:  "bin/.helmcache",
-		RepositoryConfig: "bin/.helmrepo",
-		Debug:            true,
-		Linting:          false,
-	})
-	if err != nil {
-		log.Err(err, "create helm client error")
-		return err
-	}
-
 	failedUpdate := []string{}
 
 	for _, app := range u.config.Apps {
 		// version := app.ContainerVersionPrefix + GetRemoteVersion(app, helmClient) // container version prefix is added in other part
-		version := GetRemoteVersion(app, helmClient)
+		version := u.getRemoteVersion(app)
 		if version == "" {
 			log.Warn("No valid version '"+version+"' for", app.Name)
 		}
 		err := u.updateVersion(app, version, u.config.BaseFolder)
 		if err != nil {
 			failedUpdate = append(failedUpdate, app.Name)
+		}
+
+		// clean up helm cache
+		if u.config.Helm.CleanUp {
+			ClearHelmCache(u.config.Helm.CachePath, u.config.Helm.RepoFilePath)
 		}
 	}
 

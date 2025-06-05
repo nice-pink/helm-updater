@@ -12,12 +12,12 @@ import (
 
 func Update(app models.App, version, outputFilepath, manifest string) (string, bool, error) {
 	replacePattern := getVersionPattern(app)
-	log.Info("Version Pattern:", replacePattern)
+	// log.Info("Version Pattern:", replacePattern)
 
 	// Create the replacement string with the version
 	fullVersion := app.ContainerVersionPrefix + version
 	replacement := getVersionReplacePattern(app, fullVersion)
-	log.Info("Replacement:", replacement)
+	// log.Info("Replacement:", replacement)
 
 	// Perform the replacement
 	newContent, err := utils.Replace(replacePattern, replacement, manifest)
@@ -28,7 +28,7 @@ func Update(app models.App, version, outputFilepath, manifest string) (string, b
 
 	// Check if the content actually changed
 	if newContent == manifest {
-		log.Info("same content")
+		log.Info("Manifest did not change.")
 		return "", false, nil
 	}
 

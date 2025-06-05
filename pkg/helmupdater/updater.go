@@ -111,6 +111,7 @@ func (u *Updater) sendNotification(app models.App, version string, updated bool)
 //
 
 func updateVersionInPath(app models.App, appPath, version, baseFolder string) (replaced, newAvailable bool, err error) {
+	log.Info("Check", app.Name, "in", appPath)
 	// get manifest data and path
 	manifest, path, err := getManifest(appPath, baseFolder)
 	if err != nil {

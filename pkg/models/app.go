@@ -3,11 +3,11 @@ package models
 type SystemType string
 
 const (
-	Kustomize  SystemType = "kustomize"  // update kustomize manifest
-	ArgoCd     SystemType = "argocd"     // update argocd application manifest
-	Deployment SystemType = "deployment" // update container image in deployment
-	Terraform  SystemType = "terraform"  // terraform module
-	Helm       SystemType = "helm"       // direct helm release - Still not implemented!!!
+	Kustomize SystemType = "kustomize" // update kustomize manifest
+	ArgoCd    SystemType = "argocd"    // update argocd application manifest
+	K8s       SystemType = "k8s"       // update container image in deployment, statefulsets, daemonsets
+	Terraform SystemType = "terraform" // terraform module
+	Helm      SystemType = "helm"      // direct helm release - Still not implemented!!!
 )
 
 type App struct {
@@ -16,7 +16,7 @@ type App struct {
 	Repo                   string
 	Private                bool
 	Version                string
-	Path                   string
+	Paths                  []string
 	System                 SystemType
 	ContainerImage         string
 	ContainerVersionPrefix string

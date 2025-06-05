@@ -25,7 +25,7 @@ var (
 		ContainerVersionPrefix: "",
 		RepoUsername:           "",
 		RepoPassword:           "",
-		Path:                   "main.tf",
+		Paths:                  []string{"main.tf"},
 	}
 
 	KUSTOMIZE_APP = models.App{
@@ -38,12 +38,12 @@ var (
 		ContainerVersionPrefix: "",
 		RepoUsername:           "",
 		RepoPassword:           "",
-		Path:                   "kustomization.yaml",
+		Paths:                  []string{"kustomization.yaml", "kustomization1.yaml"},
 	}
 
-	DEPLOYMENT_APP = models.App{
+	K8S_APP = models.App{
 		AutoUpdate:             false,
-		System:                 models.Deployment,
+		System:                 models.K8s,
 		Repo:                   "https://charts.dexidp.io",
 		Name:                   "nginx-ingress-controller",
 		Version:                "*",
@@ -51,7 +51,7 @@ var (
 		ContainerVersionPrefix: "v",
 		RepoUsername:           "",
 		RepoPassword:           "",
-		Path:                   "deployment.yaml",
+		Paths:                  []string{"deployment.yaml"},
 	}
 
 	ARGO_APP = models.App{
@@ -64,7 +64,7 @@ var (
 		ContainerVersionPrefix: "",
 		RepoUsername:           "",
 		RepoPassword:           "",
-		Path:                   "argo.yaml",
+		Paths:                  []string{"argo.yaml"},
 	}
 )
 
@@ -109,7 +109,7 @@ func TestUpdateKustomize(t *testing.T) {
 }
 
 func TestUpdateDeployment(t *testing.T) {
-	data, replaced, err := Update(DEPLOYMENT_APP, TEST_VERSION_NEW, "", testdata.DEPLOYMENT_APP)
+	data, replaced, err := Update(K8S_APP, TEST_VERSION_NEW, "", testdata.K8S_APP)
 	if err != nil {
 		t.Fatal(err, "update error")
 	}
@@ -156,7 +156,7 @@ func TestGetCurrentVersionTerraform(t *testing.T) {
 }
 
 func TestGetCurrentVersionDeployment(t *testing.T) {
-	v := getCurrentVersion(DEPLOYMENT_APP, testdata.DEPLOYMENT_APP)
+	v := getCurrentVersion(K8S_APP, testdata.K8S_APP)
 	if v != TEST_VERSION_CURRENT {
 		t.Error("not requested version", v, TEST_VERSION_CURRENT)
 	}

@@ -13,9 +13,9 @@ type SlackClient struct {
 	channelId string
 }
 
-func NewSlackClient() *SlackClient {
+func NewSlackClient(token string) *SlackClient {
 	return &SlackClient{
-		client:    send.NewClient(),
+		client:    send.NewClient(token),
 		channelId: os.Getenv("HELM_UPDATER_SLACK_CHANNEL_ID"),
 	}
 }

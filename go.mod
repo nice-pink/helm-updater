@@ -8,7 +8,7 @@ require (
 	github.com/mittwald/go-helm-client v0.12.17
 	github.com/nice-pink/goutil v0.4.2
 	github.com/nice-pink/repo-services v0.0.8
-	github.com/nice-pink/slack-app v0.0.0-20250604095121-7cb2ccc2dfd5
+	github.com/nice-pink/slack-app v0.0.1
 	helm.sh/helm/v3 v3.17.1
 )
 

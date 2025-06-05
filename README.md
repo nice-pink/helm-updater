@@ -1,10 +1,42 @@
+![Logo of helm-updater showing a nautic stearing wheel and and arrow towards the outlines of the kubernetes logo.](https://www.nice.pink/img/helm-updater.png)
+
+# What
+
+*helm-updater* is a tool to auto update or notify on updates of helm apps defined by manifests in gitops repository.
+
+# Manifests
+
+In the current version the helm-updater can update manifests of type:
+
+- kustomize
+- k8s (deployments, statefulsets, daemonsets, argo-rollouts, ...)
+- argo-cd
+- terraform
+
 # Config
 
-An example config file can be found in [examples/config.json](examples/config.json).
+An example config file can be found in [cmd/helm-updater/config.yaml](cmd/helm-updater/config.yaml).
 
-# Env vars
+Fields for apps:
 
-The notify webhook can be set as env var *HELM_UPDATER_NOTIFY_WEBHOOK*. The env var will be preferred.
+- *autoUpdate*: Should auto update and git push if finds a new version.
+- *name*: Of of app in helm repo
+- *repo*: Url of helm repo
+- *private*: Is private helm repo?
+- *version*: Version matcher for auto updating. `"*"`: all, `"1.*.*"`: fix major version, ...
+- *system*: Type of manifest in which app is defined.
+- *paths*: Manifest paths in git repo.
+- *containerImage*: If system is `k8s` the full image needs to be set (without version) to match the correct container.
+- *containerVersionPrefix*: Container images might contain a prefix like "v"
+- *repoUsername*: For private helm repos.
+- *repoPassword*: For private helm repos.
+
+# Slack notification
+
+Slack notifications can either be sent via slack webhook OR slack oauth token to channel id.
+
+1. To use webhook the env var *HELM_UPDATER_NOTIFY_WEBHOOK* can be set. Alternatively set *webhook* in config.
+2. To use slack app with oauth token, set env var *SLACK_TOKEN* and define channelId in config. *token* can also be set in config.
 
 ## Helm
 

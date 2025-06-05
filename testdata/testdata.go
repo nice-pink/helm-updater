@@ -1,7 +1,7 @@
 package testdata
 
 const (
-	DEPLOYMENT_APP string = `apiVersion: apps/v1
+	K8S_APP string = `apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-ingress-controller

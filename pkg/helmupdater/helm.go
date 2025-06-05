@@ -44,7 +44,7 @@ func GetChartVersion(entry repo.Entry, helmClient helmclient.Client, system mode
 	}
 	log.Info(chart.Metadata.Name, "found. App version:", chart.Metadata.AppVersion, ", Chart version:", chart.Metadata.Version)
 
-	if system == models.Deployment {
+	if system == models.K8s {
 		// in this case use app version
 		return chart.Metadata.AppVersion
 	}

@@ -11,21 +11,31 @@ import (
 
 type Updater struct {
 	notifyClient notify.Client
+	gitFlags     util.GitFlags
+	config       *models.Config
 }
 
-func NewUpdater() *Updater {
-	return &Updater{}
-}
-
-func (u *Updater) Run(configFile string, gitFlags util.GitFlags) error {
+func NewUpdater(configFile string, gitFlags util.GitFlags) *Updater {
 	c := LoadConfig(configFile)
+	if c == nil {
+		return nil
+	}
 
 	// init notify client
-	u.notifyClient = notify.NewClient(c.Notify)
+	notifyClient := notify.NewClient(c.Notify)
+
+	return &Updater{
+		config:       c,
+		notifyClient: notifyClient,
+		gitFlags:     gitFlags,
+	}
+}
+
+func (u *Updater) Run() error {
 
 	// checkout repo?
-	if gitFlags.Url != nil {
-		err := util.GitClone(*gitFlags.Url, c.BaseFolder, gitFlags)
+	if u.gitFlags.Url != nil {
+		err := util.GitClone(*u.gitFlags.Url, u.config.BaseFolder, u.gitFlags)
 		if err != nil {
 			return err
 		}
@@ -46,30 +56,15 @@ func (u *Updater) Run(configFile string, gitFlags util.GitFlags) error {
 
 	failedUpdate := []string{}
 
-	for _, app := range c.Apps {
-		//version := app.ContainerVersionPrefix + GetRemoteVersion(app, helmClient) // container version prefix is added in other part
+	for _, app := range u.config.Apps {
+		// version := app.ContainerVersionPrefix + GetRemoteVersion(app, helmClient) // container version prefix is added in other part
 		version := GetRemoteVersion(app, helmClient)
 		if version == "" {
 			log.Warn("No valid version '"+version+"' for", app.Name)
 		}
-		replaced, newAvailable, err := updateVersion(app, version, c.BaseFolder)
+		err := u.updateVersion(app, version, u.config.BaseFolder)
 		if err != nil {
-			log.Err(err, "update version error")
 			failedUpdate = append(failedUpdate, app.Name)
-			continue
-		}
-		if replaced {
-			err = GitPush(app, version, c.BaseFolder, gitFlags)
-			if err != nil {
-				log.Err(err, "git push error")
-				failedUpdate = append(failedUpdate, app.Name)
-			} else {
-				u.notifyClient.SendNotification(c.Notify, app, version, true)
-			}
-		} else if newAvailable {
-			u.notifyClient.SendNotification(c.Notify, app, version, false)
-		} else {
-			log.Info("Already up to date.")
 		}
 	}
 
@@ -83,9 +78,41 @@ func (u *Updater) Run(configFile string, gitFlags util.GitFlags) error {
 	return nil
 }
 
-func updateVersion(app models.App, version, baseFolder string) (replaced, newAvailable bool, err error) {
+func (u *Updater) updateVersion(app models.App, version, baseFolder string) error {
+	for _, path := range app.Paths {
+		replaced, newAvailable, err := updateVersionInPath(app, path, version, baseFolder)
+		if err != nil {
+			log.Err(err, "update version error")
+			return err
+		}
+		if replaced {
+			err = GitPush(app, version, baseFolder, u.gitFlags)
+			if err != nil {
+				return err
+			} else {
+				u.sendNotification(app, version, true)
+			}
+		} else if newAvailable {
+			u.sendNotification(app, version, false)
+		} else {
+			log.Info("Already up to date.")
+		}
+	}
+	return nil
+}
+
+func (u *Updater) sendNotification(app models.App, version string, updated bool) {
+	if u.config == nil {
+		return
+	}
+	u.notifyClient.SendNotification(u.config.Notify, app, version, false)
+}
+
+//
+
+func updateVersionInPath(app models.App, appPath, version, baseFolder string) (replaced, newAvailable bool, err error) {
 	// get manifest data and path
-	manifest, path, err := getManifest(app, baseFolder)
+	manifest, path, err := getManifest(appPath, baseFolder)
 	if err != nil {
 		log.Err(err, "open manifest")
 		return false, false, err

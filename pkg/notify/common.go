@@ -13,7 +13,7 @@ type Client interface {
 
 func NewClient(config models.Notication) Client {
 	if config.Enable && (config.ChannelId != "" || os.Getenv("HELM_UPDATER_SLACK_CHANNEL_ID") != "") {
-		return NewSlackClient()
+		return NewSlackClient(config.Token)
 	}
 	if config.Enable && (config.Webhook != "" || os.Getenv("HELM_UPDATER_NOTIFY_WEBHOOK") != "") {
 		return NewNotifierClient()

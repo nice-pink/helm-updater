@@ -53,7 +53,7 @@ func getVersionPattern(app models.App) string {
 	if app.System == models.Terraform {
 		return `([ ]+version[ ]+=[ ]+` + `")([a-zA-Z0-9_.-].*)(")`
 	}
-	if app.System == models.Deployment {
+	if app.System == models.K8s {
 		//image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0
 		return `([ ]+image: ` + app.ContainerImage + `:)([a-zA-Z0-9_.-].*)`
 	}
@@ -70,7 +70,7 @@ func getVersionReplacePattern(app models.App, version string) string {
 	if app.System == models.Terraform {
 		return "${1}" + version + "${3}"
 	}
-	if app.System == models.Deployment {
+	if app.System == models.K8s {
 		return "${1}" + version
 	}
 	return ""
@@ -138,9 +138,9 @@ func getVersionSegment(seg string, i int) string {
 
 // data
 
-func getManifest(app models.App, baseFolder string) (content string, path string, err error) {
+func getManifest(appPath, baseFolder string) (content string, path string, err error) {
 	// Construct the full path to the manifest file
-	fullPath := filepath.Join(baseFolder, app.Path)
+	fullPath := filepath.Join(baseFolder, appPath)
 
 	// Read the manifest file
 	data, err := os.ReadFile(fullPath)

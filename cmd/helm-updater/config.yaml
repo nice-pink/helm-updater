@@ -5,7 +5,8 @@ apps:
   private: false
   version: "*"
   system: kustomize
-  path: base/resources/ops/dex/dev/kustomization.yaml
+  paths:
+  - base/resources/ops/dex/dev/kustomization.yaml
   containerImage: ignored
   containerVersionPrefix: ""
   repoUsername: ""
@@ -15,8 +16,9 @@ apps:
   repo: https://oauth2-proxy.github.io/manifests
   private: false
   version: "*"
-  system: deployment
-  path: base/patches/oauth2-proxy/dev/deployment.yaml
+  system: k8s
+  paths:
+  - base/patches/oauth2-proxy/dev/deployment.yaml
   containerImage: quay.io/oauth2-proxy/oauth2-proxy
   containerVersionPrefix: v
   repoUsername: ""
@@ -25,3 +27,5 @@ baseFolder: /Users/raf/dev/ops/rs-deployments
 notify:
   enable: true
   webhook: from_env_var
+  token: from_env_var
+  channelId: ABCDEFGHIJ

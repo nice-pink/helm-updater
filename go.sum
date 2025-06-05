@@ -295,6 +295,8 @@ github.com/nice-pink/repo-services v0.0.8 h1:a248RD30KxvfbRJnHKT3P459W4rfOV1/zfZ
 github.com/nice-pink/repo-services v0.0.8/go.mod h1:PxHG+C8YKqfHX2ftPN+tRDmmQ/DBrr0sUF7otQfJ1TE=
 github.com/nice-pink/slack-app v0.0.0-20250604095121-7cb2ccc2dfd5 h1:chjMDcATwgd5UcvPLdLkl6L3dsWvZCjfC40Fw2tPMU8=
 github.com/nice-pink/slack-app v0.0.0-20250604095121-7cb2ccc2dfd5/go.mod h1:bevTSia3Tf0q/sR7XfRTHHAHQoIXRZovEPoP/l4M1DY=
+github.com/nice-pink/slack-app v0.0.1 h1:oONtDZPIXohiA2S0M6ivKZZAnWC5Gmy35WENWKbX3oo=
+github.com/nice-pink/slack-app v0.0.1/go.mod h1:bevTSia3Tf0q/sR7XfRTHHAHQoIXRZovEPoP/l4M1DY=
 github.com/onsi/ginkgo/v2 v2.21.0 h1:7rg/4f3rB88pb5obDgNZrNHrQ4e6WpjonchcpuBRnZM=
 github.com/onsi/ginkgo/v2 v2.21.0/go.mod h1:7Du3c42kxCUegi0IImZ1wUQzMBVecgIHjR1C+NkhLQo=
 github.com/onsi/gomega v1.35.1 h1:Cwbd75ZBPxFSuZ6T+rN/WCb/gOc6YgFBXLlZLhC7Ds4=

@@ -15,35 +15,40 @@ const (
 func TestUpdateVersionKustomize(t *testing.T) {
 	app := KUSTOMIZE_APP
 
-	// write test file
-	outputPath := TEST_FILE_BASE_PATH + "/" + app.Path
-	err := os.WriteFile(outputPath, []byte(testdata.KUSTOMIZE_APP), 0666)
-	if err != nil {
-		t.Error("cannot write test file", outputPath)
-	}
+	for _, path := range app.Paths {
+		// write test file
+		outputPath := TEST_FILE_BASE_PATH + "/" + path
+		err := os.WriteFile(outputPath, []byte(testdata.KUSTOMIZE_APP), 0666)
+		if err != nil {
+			t.Error("cannot write test file", outputPath)
+		}
 
-	validateUpdate(app, outputPath, t)
+		validateUpdate(app, path, outputPath, t)
+	}
 }
 
 func TestUpdateVersionDeployment(t *testing.T) {
-	app := DEPLOYMENT_APP
+	app := K8S_APP
 
-	// write test file
-	outputPath := TEST_FILE_BASE_PATH + "/" + app.Path
-	err := os.WriteFile(outputPath, []byte(testdata.DEPLOYMENT_APP), 0666)
-	if err != nil {
-		t.Error("cannot write test file", outputPath)
+	for _, path := range app.Paths {
+		// write test file
+		outputPath := TEST_FILE_BASE_PATH + "/" + path
+		err := os.WriteFile(outputPath, []byte(testdata.K8S_APP), 0666)
+		if err != nil {
+			t.Error("cannot write test file", outputPath)
+		}
+
+		validateUpdate(app, path, outputPath, t)
 	}
 
-	validateUpdate(app, outputPath, t)
 }
 
-func validateUpdate(app models.App, outputPath string, t *testing.T) {
+func validateUpdate(app models.App, appPath, outputPath string, t *testing.T) {
 	// new test version
 	version := "100.0.0"
 
 	// don't update manifest
-	replaced, newAvailable, err := updateVersion(app, version, TEST_FILE_BASE_PATH)
+	replaced, newAvailable, err := updateVersionInPath(app, appPath, version, TEST_FILE_BASE_PATH)
 	if err != nil {
 		t.Error("update version error", err)
 	}
@@ -56,7 +61,7 @@ func validateUpdate(app models.App, outputPath string, t *testing.T) {
 
 	// write manifest (autoupdate)
 	app.AutoUpdate = true
-	replaced, newAvailable, err = updateVersion(app, version, TEST_FILE_BASE_PATH)
+	replaced, newAvailable, err = updateVersionInPath(app, appPath, version, TEST_FILE_BASE_PATH)
 	if err != nil {
 		t.Error("update version error", err)
 	}

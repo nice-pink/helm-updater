@@ -1,6 +1,5 @@
 baseFolder: /src
 
-
 helm:
   cachePath: bin/.helmcache
   repoFilePath: bin/.helmrepo

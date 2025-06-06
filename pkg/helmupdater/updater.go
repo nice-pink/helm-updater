@@ -58,6 +58,7 @@ func (u *Updater) Run() error {
 	failedUpdate := []string{}
 
 	for _, app := range u.config.Apps {
+		log.Info("---", app.Name, "-", app.Repo)
 		// version := app.ContainerVersionPrefix + GetRemoteVersion(app, helmClient) // container version prefix is added in other part
 		version := u.getRemoteVersion(app)
 		if version == "" {

@@ -11,6 +11,7 @@ import (
 )
 
 func Update(app models.App, version, outputFilepath, manifest string) (string, bool, error) {
+	log.Info("Try to update", app.Name)
 	replacePattern := getVersionPattern(app)
 	// log.Info("Version Pattern:", replacePattern)
 
